@@ -1,2 +1,2 @@
-# excel-import-php
+import-php
 Simple importer written in PHP
