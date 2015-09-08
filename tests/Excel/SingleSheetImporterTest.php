@@ -52,4 +52,13 @@ class SingleSheetImporterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(3, $i);
     }
 
+    public function testReadHeader()
+    {
+        $this->importer = new Vdbf\Import\Excel\SingleSheetImporter(new Vdbf\Import\Excel\Reader(), ['read_header' => false]);
+
+        $dumped = $this->importer->dump($this->path);
+
+        $this->assertCount(4, $dumped);
+    }
+
 }

@@ -12,19 +12,21 @@ class SingleSheetImporter implements ImporterContract
     protected $reader;
 
     /**
-     * @var int
+     * @var array
      */
-    protected $sheetIndex;
+    protected $options;
 
     /**
      * Importer constructor.
      * @param $reader
      * @param int $sheetIndex
      */
-    public function __construct(ReaderContract $reader, $sheetIndex = 0)
+    public function __construct(ReaderContract $reader, $options = [])
     {
         $this->reader = $reader;
-        $this->sheetIndex = $sheetIndex;
+        $this->options = array_merge([
+            'sheet_index' => 0
+        ], $options);
     }
 
     /**
@@ -37,12 +39,10 @@ class SingleSheetImporter implements ImporterContract
     {
         $this->reader->load($path);
 
-        $sheet = $this->reader->sheet($this->sheetIndex);
+        $sheet = $this->reader->sheet($this->option('sheet_index'));
         $rows = $this->reader->rows($sheet);
 
-        $header = $this->cells($rows->current()->getCellIterator());
-
-        $rows->next();
+        $header = $this->readHeader($rows);
 
         while ($rows->valid()) {
             $row = $this->cells($rows->current()->getCellIterator());
@@ -85,5 +85,22 @@ class SingleSheetImporter implements ImporterContract
         }
 
         return $out;
+    }
+
+    protected function option($key, $defaultValue = null)
+    {
+        return isset($this->options[$key]) ? $this->options[$key] : $defaultValue;
+    }
+
+    protected function readHeader(&$rows)
+    {
+        if ($this->option('read_header', true)) {
+            $header = $this->cells($rows->current()->getCellIterator());
+            $rows->next();
+        } else {
+            $header = array_fill(0, count($this->cells($rows->current()->getCellIterator())), null);
+        }
+
+        return $header;
     }
 }
