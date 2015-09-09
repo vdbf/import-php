@@ -3,6 +3,16 @@
 use Vdbf\Import\Importer as ImporterContract;
 use Vdbf\Import\Reader as ReaderContract;
 
+/**
+ * Class SingleSheetImporter
+ *
+ * Reads a single sheet, imports per row and supplies the importer with the row content and the header content
+ * Options available:
+ * - sheet_index, defaults to 0
+ * - read_header, defaults to true, defines if the sheet has a header row
+ *
+ * @package Vdbf\Import\Excel
+ */
 class SingleSheetImporter implements ImporterContract
 {
 
@@ -18,8 +28,8 @@ class SingleSheetImporter implements ImporterContract
 
     /**
      * Importer constructor.
-     * @param $reader
-     * @param int $sheetIndex
+     * @param ReaderContract $reader
+     * @param array $options
      */
     public function __construct(ReaderContract $reader, $options = [])
     {
@@ -32,8 +42,8 @@ class SingleSheetImporter implements ImporterContract
     /**
      * Do a memory efficient (iterator) import of each row
      *
-     * @param $path
-     * @param null $importer
+     * @param string $path
+     * @param string|array|\Closure $importer
      */
     public function import($path, $importer = null)
     {
@@ -54,7 +64,7 @@ class SingleSheetImporter implements ImporterContract
     /**
      * Do a simple dump to an associative array
      *
-     * @param $path
+     * @param string $path
      * @return array
      */
     public function dump($path)
@@ -87,17 +97,32 @@ class SingleSheetImporter implements ImporterContract
         return $out;
     }
 
+    /**
+     * Retrieve option with default value fallback
+     *
+     * @param string $key
+     * @param mixed $defaultValue
+     * @return mixed
+     */
     protected function option($key, $defaultValue = null)
     {
         return isset($this->options[$key]) ? $this->options[$key] : $defaultValue;
     }
 
+    /**
+     * Read header and if configured for reading, proceed to next row
+     *
+     * @param $rows
+     * @return array
+     */
     protected function readHeader(&$rows)
     {
         $header = $this->cells($rows->current()->getCellIterator());
-        
+
         if ($this->option('read_header', true)) {
             $rows->next();
+        } else {
+            $header = range(0, count($header) - 1);
         }
 
         return $header;

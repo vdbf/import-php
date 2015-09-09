@@ -59,6 +59,10 @@ class SingleSheetImporterTest extends PHPUnit_Framework_TestCase
         $dumped = $this->importer->dump($this->path);
 
         $this->assertCount(4, $dumped);
+
+        $item = array_pop($dumped);
+
+        $this->assertEquals(0, key($item));
     }
 
 }
