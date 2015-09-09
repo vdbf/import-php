@@ -17,7 +17,7 @@ class SingleSheetImporter implements ImporterContract
 {
 
     /**
-     * @var Reader
+     * @var ReaderContract
      */
     protected $reader;
 
@@ -43,7 +43,7 @@ class SingleSheetImporter implements ImporterContract
      * Do a memory efficient (iterator) import of each row
      *
      * @param string $path
-     * @param string|array|\Closure $importer
+     * @param string|array|\Closure|null $importer
      */
     public function import($path, $importer = null)
     {
