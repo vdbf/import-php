@@ -94,11 +94,10 @@ class SingleSheetImporter implements ImporterContract
 
     protected function readHeader(&$rows)
     {
+        $header = $this->cells($rows->current()->getCellIterator());
+        
         if ($this->option('read_header', true)) {
-            $header = $this->cells($rows->current()->getCellIterator());
             $rows->next();
-        } else {
-            $header = array_fill(0, count($this->cells($rows->current()->getCellIterator())), null);
         }
 
         return $header;
